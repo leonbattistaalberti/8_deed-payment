@@ -20,4 +20,13 @@ contract("Deed", (accounts) => {
 
 		assert.equal(finalBalance.sub(initialBalance).toNumber(), 100);
 	});
+
+	it("Should not withdraw too sooner than set time", async () => {
+		try {
+			await deed.withdraw({ from: accounts[0] });
+		} catch (err) {
+			assert(err.message.includes("too early"));
+			console.error(err);
+		}
+	});
 });
