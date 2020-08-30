@@ -20,13 +20,30 @@ contract("Deed", (accounts) => {
 
 		assert.equal(finalBalance.sub(initialBalance).toNumber(), 100);
 	});
-
-	it("Should not withdraw too sooner than set time", async () => {
+	it("Should not withdraw sooner than set time", async () => {
+		const deed = await Deed.new(accounts[0], accounts[1], 5, {
+			value: 100,
+		});
 		try {
 			await deed.withdraw({ from: accounts[0] });
 		} catch (err) {
 			assert(err.message.includes("too early"));
-			console.error(err);
+			return;
 		}
+		assert(false);
+	});
+
+	it("Should not withdraw if sender is not lawyer", async () => {
+		const deed = await Deed.new(accounts[0], accounts[1], 5, {
+			value: 100,
+		});
+		try {
+			await new Promise((resolve) => setTimeout(resolve, 5000));
+			await deed.withdraw({ from: accounts[1] });
+		} catch (err) {
+			assert(err.message.includes("lawyer only"));
+			return;
+		}
+		assert(false);
 	});
 });
